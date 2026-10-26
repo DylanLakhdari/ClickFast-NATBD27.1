@@ -18,6 +18,19 @@ docker run -d --name clickfast -p 8080:8080 clickfast:1.0.0
 
 Puis ouvrir `http://localhost:8080`.
 
+### Lancer toute la stack
+
+```powershell
+copy .env.example .env
+docker compose up -d --build
+docker compose ps
+```
+
+URLs :
+- Jeu : `http://localhost:8080`
+- API : `http://localhost:3000/scores`
+- Adminer : `http://localhost:8081`
+
 ## Variables d'environnement
 
 Créer un fichier `.env` à partir de `.env.example`, puis lancer les conteneurs avec `--env-file .env`.
@@ -73,3 +86,12 @@ Etape 8 : sortie de la configuration hors du code.
 - Démarrage Docker avec variables centralisées : `docker run --env-file .env ...`
 - Vérification historique : `git log -- .env` ne remonte aucun commit.
 - Front : l'URL de l'API reste visible côté navigateur (`script.js`), donc un changement d'environnement impose de livrer la bonne URL front.
+
+Etape 9 : stack complète dans `docker-compose.yml`.
+- Une commande démarre le jeu, l'API, Postgres et Adminer : `docker compose up -d --build`
+- Tous les services utilisent le réseau `clickfast-net` et le volume nommé `clickfast-pg-data`
+- Postgres n'expose pas de port hôte (uniquement `5432/tcp` interne)
+- L'API attend Postgres en `healthy` via `depends_on.condition: service_healthy`
+- Résultat `docker compose ps` : conteneurs `running` et Postgres `healthy`
+- URLs testées : jeu `200`, API `200`, Adminer `200`
+- Ajustements manuelles -> Compose : variables ajoutées dans `.env.example` (`WEB_PORT`, `ADMINER_PORT`)
