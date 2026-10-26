@@ -18,6 +18,10 @@ docker run -d --name clickfast -p 8080:8080 clickfast:1.0.0
 
 Puis ouvrir `http://localhost:8080`.
 
+## Variables d'environnement
+
+Créer un fichier `.env` à partir de `.env.example`, puis lancer les conteneurs avec `--env-file .env`.
+
 ## Journal de bord
 
 Etape 1 : jeu local finalisé en HTML/CSS/JS (score qui augmente au clic, chrono 5 secondes, score bloqué après la fin du temps).
@@ -43,9 +47,9 @@ Etape 5 : création d'une API Node.js dans `api/` avec Express et CORS.
 Etape 6 : passage du scoreboard sur PostgreSQL en conteneurs Docker.
 - Image API ajoutée (`api/Dockerfile`) et dépendance `pg` branchée dans `api/server.js`
 - Commandes manuelles utilisées :
-  - `docker run -d --name clickfast-postgres -e POSTGRES_USER=clickfast -e POSTGRES_PASSWORD=clickfast -e POSTGRES_DB=clickfast -v clickfast-pg-data:/var/lib/postgresql/data postgres:16-alpine`
+  - `docker run -d --name clickfast-postgres --env-file .env -v clickfast-pg-data:/var/lib/postgresql/data postgres:16-alpine`
   - `docker network inspect bridge --format "{{range .Containers}}{{.Name}}={{.IPv4Address}} {{end}}"`
-  - `docker run -d --name clickfast-api -p 3000:3000 -e DB_HOST=172.17.0.3 -e DB_PORT=5432 -e DB_USER=clickfast -e DB_PASSWORD=clickfast -e DB_NAME=clickfast clickfast-api:1.0.0`
+  - `docker run -d --name clickfast-api -p 3000:3000 --env-file .env -e DB_HOST=172.17.0.3 clickfast-api:1.0.0`
 - IP interne utilisée pour joindre la base (bridge par défaut) : `172.17.0.3`
 - Résultats :
   - score inséré puis lu via `GET /scores`
@@ -61,3 +65,11 @@ Etape 7 : réseau Docker isolé (plus d'IP en dur).
 - Vérification réseau : `docker network inspect clickfast-net` -> `clickfast-postgres=172.19.0.2/16`, `clickfast-api=172.19.0.3/16`
 - Vérification depuis l'hôte : `Test-NetConnection localhost -Port 5432` -> `TcpTestSucceeded = False`
 - Vérification applicative : `POST /scores` puis `GET /scores` OK avec cette topologie
+
+Etape 8 : sortie de la configuration hors du code.
+- Ajout de `.env.example` (clé/valeurs factices) et conservation de `.env` hors Git.
+- Suppression des valeurs DB en dur dans l'API : `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `API_PORT` deviennent obligatoires.
+- Démarrage sans variable obligatoire : échec immédiat avec message clair (`Variable d'environnement obligatoire manquante: ...`).
+- Démarrage Docker avec variables centralisées : `docker run --env-file .env ...`
+- Vérification historique : `git log -- .env` ne remonte aucun commit.
+- Front : l'URL de l'API reste visible côté navigateur (`script.js`), donc un changement d'environnement impose de livrer la bonne URL front.

@@ -2,14 +2,48 @@ const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
 
+function requireEnv(name) {
+    const value = process.env[name];
+    if (!value || value.trim() === "") {
+        throw new Error(`Variable d'environnement obligatoire manquante: ${name}`);
+    }
+    return value;
+}
+
+let dbHost;
+let dbPort;
+let dbUser;
+let dbPassword;
+let dbName;
+let apiPort;
+
+try {
+    dbHost = requireEnv("DB_HOST");
+    dbPort = Number(requireEnv("DB_PORT"));
+    dbUser = requireEnv("DB_USER");
+    dbPassword = requireEnv("DB_PASSWORD");
+    dbName = requireEnv("DB_NAME");
+    apiPort = Number(requireEnv("API_PORT"));
+
+    if (!Number.isInteger(dbPort) || dbPort <= 0) {
+        throw new Error("DB_PORT doit être un entier strictement positif.");
+    }
+
+    if (!Number.isInteger(apiPort) || apiPort <= 0) {
+        throw new Error("API_PORT doit être un entier strictement positif.");
+    }
+} catch (error) {
+    console.error(error.message);
+    process.exit(1);
+}
+
 const app = express();
-const port = 3000;
 const pool = new Pool({
-    host: process.env.DB_HOST || "127.0.0.1",
-    port: Number(process.env.DB_PORT || 5432),
-    user: process.env.DB_USER || "clickfast",
-    password: process.env.DB_PASSWORD || "clickfast",
-    database: process.env.DB_NAME || "clickfast",
+    host: dbHost,
+    port: dbPort,
+    user: dbUser,
+    password: dbPassword,
+    database: dbName,
 });
 
 pool.on("error", (error) => {
@@ -65,8 +99,8 @@ app.post("/scores", async (req, res) => {
 
 initializeDatabase()
     .then(() => {
-        app.listen(port, () => {
-            console.log(`Scores API active sur http://localhost:${port}`);
+        app.listen(apiPort, () => {
+            console.log(`Scores API active sur http://localhost:${apiPort}`);
         });
     })
     .catch((error) => {
