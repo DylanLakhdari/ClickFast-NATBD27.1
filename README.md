@@ -31,3 +31,6 @@ Etape 4 : mesures et vérifications Docker.
 - Build à froid (`--no-cache`) : `3.045 s`
 - Build à chaud : `2.857 s`
 - Vérification HTTP via conteneur : `200 OK` sur `http://localhost:8090`
+- Vérification utilisateur conteneur : `whoami = nginx` (non-root)
+- Vérification contenu servi (`/usr/share/nginx/html`) : `50x.html`, `index.html`, `script.js`, `style.css`
+- Vérification contexte de build : `transferring context: 117B`
