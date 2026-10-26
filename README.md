@@ -32,6 +32,13 @@ URLs :
 - Adminer : `http://localhost:8081`
 - Stats API : `http://localhost:5000/stats`
 
+### Redéploiement depuis Docker Hub
+
+```powershell
+docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml ps
+```
+
 ## Variables d'environnement
 
 Créer un fichier `.env` à partir de `.env.example`, puis lancer les conteneurs avec `--env-file .env`.
@@ -102,3 +109,8 @@ Etape 10 : ajout du service Python `stats-api`.
 - Le service lit la même base Postgres (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`) et expose `GET /stats`
 - Réponse stats observée : `{"best_score":21,"distinct_players":3,"games_played":4}`
 - Base coupée (`docker stop clickfast-postgres`) : `GET /stats` renvoie `503` avec `{"error":"base indisponible"}`
+
+Etape 11 : préparation du redéploiement depuis le registry.
+- Ajout de `docker-compose.prod.yml` avec `image:` (aucun `build:`) pour `web`, `api`, `stats-api`
+- Variables ajoutées dans `.env.example` : `DOCKERHUB_NAMESPACE`, `IMAGE_TAG`
+- Ce fichier permet un démarrage depuis les images publiées (`docker compose -f docker-compose.prod.yml up -d`) sans build local
