@@ -1,0 +1,8 @@
+.git
+.github
+.idea
+README.md
+Dockerfile*
+docker-compose*
+.env
+.env.*
