@@ -30,6 +30,7 @@ URLs :
 - Jeu : `http://localhost:8080`
 - API : `http://localhost:3000/scores`
 - Adminer : `http://localhost:8081`
+- Stats API : `http://localhost:5000/stats`
 
 ## Variables d'environnement
 
@@ -95,3 +96,9 @@ Etape 9 : stack complète dans `docker-compose.yml`.
 - Résultat `docker compose ps` : conteneurs `running` et Postgres `healthy`
 - URLs testées : jeu `200`, API `200`, Adminer `200`
 - Ajustements manuelles -> Compose : variables ajoutées dans `.env.example` (`WEB_PORT`, `ADMINER_PORT`)
+
+Etape 10 : ajout du service Python `stats-api`.
+- Service `stats-api` ajouté à `docker-compose.yml` avec publication sur `STATS_API_PORT=5000`
+- Le service lit la même base Postgres (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`) et expose `GET /stats`
+- Réponse stats observée : `{"best_score":21,"distinct_players":3,"games_played":4}`
+- Base coupée (`docker stop clickfast-postgres`) : `GET /stats` renvoie `503` avec `{"error":"base indisponible"}`

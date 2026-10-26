@@ -57,6 +57,26 @@ services:
     networks:
       - clickfast-net
 
+  stats-api:
+    build:
+      context: ./stats-api
+      dockerfile: Dockerfile
+    container_name: clickfast-stats-api
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      STATS_API_PORT: ${STATS_API_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${STATS_API_PORT}:${STATS_API_PORT}"
+    networks:
+      - clickfast-net
+
 volumes:
   clickfast-pg-data:
     name: clickfast-pg-data
