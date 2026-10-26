@@ -52,3 +52,12 @@ Etape 6 : passage du scoreboard sur PostgreSQL en conteneurs Docker.
   - score conservé après `docker stop` puis `docker start` du conteneur Postgres
   - score conservé après `docker rm` du conteneur Postgres puis `docker run` neuf sur le même volume nommé
   - base coupée : l'API répond une erreur HTTP exploitable (`503`, "base indisponible"), le jeu reste jouable
+
+Etape 7 : réseau Docker isolé (plus d'IP en dur).
+- Réseau créé : `docker network create clickfast-net`
+- API et base lancées sur ce réseau avec `--network clickfast-net`
+- L'API se connecte à la base par nom de conteneur : `DB_HOST=clickfast-postgres`
+- Le conteneur Postgres ne publie aucun port vers l'hôte (pas de `-p 5432:5432`)
+- Vérification réseau : `docker network inspect clickfast-net` -> `clickfast-postgres=172.19.0.2/16`, `clickfast-api=172.19.0.3/16`
+- Vérification depuis l'hôte : `Test-NetConnection localhost -Port 5432` -> `TcpTestSucceeded = False`
+- Vérification applicative : `POST /scores` puis `GET /scores` OK avec cette topologie
