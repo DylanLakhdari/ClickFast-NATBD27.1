@@ -34,3 +34,8 @@ Etape 4 : mesures et vérifications Docker.
 - Vérification utilisateur conteneur : `whoami = nginx` (non-root)
 - Vérification contenu servi (`/usr/share/nginx/html`) : `50x.html`, `index.html`, `script.js`, `style.css`
 - Vérification contexte de build : `transferring context: 117B`
+
+Etape 5 : création d'une API Node.js dans `api/` avec Express et CORS.
+- Route `POST /scores` (valide `username` et `score`, puis enregistre le score en mémoire)
+- Route `GET /scores` (retourne le classement)
+- Test local API : POST puis GET réussis sur `http://localhost:3000`
