@@ -14,6 +14,10 @@
     <div id="container">
         <h1 class="flex-center">ClickFast</h1>
         <p class="catchphrase">Sois le plus rapide des clickers du game ⚡</p>
+        <div class="flex-center">
+            <label for="username">Pseudo :</label>
+            <input id="username" type="text" maxlength="20" placeholder="Ton pseudo" />
+        </div>
         <p class="flex-center">Temps restant : <span id="timer">5</span>s</p>
         <div class="flex-center">
             <p id="score" class="number flex-center">0</p>
@@ -21,6 +25,9 @@
         <div class="flex-center">
             <button id="button-clicker" type="button">Clique !</button>
         </div>
+        <p id="api-status" class="catchphrase"></p>
+        <h2 class="flex-center">Classement</h2>
+        <ol id="ranking" class="ranking"></ol>
     </div>
 </div>
 <script src="script.js"></script>

@@ -11,6 +11,12 @@ h1 {
     margin: 5rem;
 }
 
+#username {
+    margin-left: 1rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
 #button-clicker {
     background-color: aquamarine;
     border: none;
@@ -55,4 +61,9 @@ h1 {
     border-radius: 25%;
     font-size: 3rem;
     font-weight: bold;
+}
+
+.ranking {
+    max-width: 24rem;
+    margin: 1rem auto 0;
 }

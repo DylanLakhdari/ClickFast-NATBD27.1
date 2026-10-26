@@ -39,3 +39,16 @@ Etape 5 : création d'une API Node.js dans `api/` avec Express et CORS.
 - Route `POST /scores` (valide `username` et `score`, puis enregistre le score en mémoire)
 - Route `GET /scores` (retourne le classement)
 - Test local API : POST puis GET réussis sur `http://localhost:3000`
+
+Etape 6 : passage du scoreboard sur PostgreSQL en conteneurs Docker.
+- Image API ajoutée (`api/Dockerfile`) et dépendance `pg` branchée dans `api/server.js`
+- Commandes manuelles utilisées :
+  - `docker run -d --name clickfast-postgres -e POSTGRES_USER=clickfast -e POSTGRES_PASSWORD=clickfast -e POSTGRES_DB=clickfast -v clickfast-pg-data:/var/lib/postgresql/data postgres:16-alpine`
+  - `docker network inspect bridge --format "{{range .Containers}}{{.Name}}={{.IPv4Address}} {{end}}"`
+  - `docker run -d --name clickfast-api -p 3000:3000 -e DB_HOST=172.17.0.3 -e DB_PORT=5432 -e DB_USER=clickfast -e DB_PASSWORD=clickfast -e DB_NAME=clickfast clickfast-api:1.0.0`
+- IP interne utilisée pour joindre la base (bridge par défaut) : `172.17.0.3`
+- Résultats :
+  - score inséré puis lu via `GET /scores`
+  - score conservé après `docker stop` puis `docker start` du conteneur Postgres
+  - score conservé après `docker rm` du conteneur Postgres puis `docker run` neuf sur le même volume nommé
+  - base coupée : l'API répond une erreur HTTP exploitable (`503`, "base indisponible"), le jeu reste jouable
